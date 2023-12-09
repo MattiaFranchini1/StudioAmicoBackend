@@ -5,11 +5,11 @@ const roomSchema = new mongoose.Schema({
   subject: [{ type: String, required: true }],
   class_level: { type: Number, required: true },
   class_type: {type: String, required: true},
-  host_user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  host_user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, //auto-generated
   participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   messages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }],
   files: [{ type: mongoose.Schema.Types.ObjectId, ref: 'File' }],
-  meet_link: { type: String, required: true},
+  meet_link: { type: String, required: true}, //auto-generated
   admins: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 });
 
