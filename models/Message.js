@@ -6,6 +6,7 @@ const messageSchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now },
   room: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true },
   message_to_reply: {type: mongoose.Schema.Types.ObjectId, ref: 'Message'}, 
+  is_deleted: {type: Boolean, default: false},
 });
 
 const Message = mongoose.model('Message', messageSchema);

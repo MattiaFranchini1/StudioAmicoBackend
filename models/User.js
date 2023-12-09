@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true},
   password: { type: String, required: true },
   registered_at: { type: Date, default: Date.now },
+  profile_image_url: { type: String, required: true},
   rooms: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Room' }],
   teaching_review: {type: Float32Array},
   learning_review: {type: Float32Array},
