@@ -46,34 +46,84 @@ router.put('/:userId', authMiddleware, async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 */
 
-router.post('/register', async (req, res) => {
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+//const jwt = require('jsonwebtoken');
+
+// Configura la strategia di autenticazione Google con Passport
+passport.use(new GoogleStrategy({
+  clientID: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  callbackURL: process.env.CALLBACK_AUTH_URI,
+},
+async (accessToken, refreshToken, profile, done) => {
   try {
-    const { username, email, profile_image_url } = req.body;
+    // Trova o crea un utente nel tuo database
+    const user = await User.findOne({ googleId: profile.id });
 
-    // Verifica se l'utente esiste già
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ error: 'L\'utente con questa email già esiste' });
+    if (user) {
+      // Se l'utente esiste già, restituisci l'utente
+      return done(null, user);
+    } else {
+      // Se l'utente non esiste, crea un nuovo utente nel database
+      const newUser = new User({
+        googleId: profile.id,
+        username: profile.displayName,
+        email: profile.emails[0].value,
+        profile_image_url: profile.photos[0].value
+        // Altri campi utente che desideri salvare
+      });
+
+      await newUser.save();
+      return done(null, newUser);
     }
-
-    // Crea un nuovo utente
-    const newUser = new User({
-      username,
-      email,
-      profile_image_url,
-    });
-
-    // Salva l'utente nel database
-    await newUser.save();
-
-
-    res.status(201).json({ message: 'Utente registrato con successo', user: newUser });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Errore durante la registrazione dell\'utente' });
+    return done(error, null);
+  }
+}));
+
+// Serializza l'utente per salvarlo nella sessione
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+// Deserializza l'utente dalla sessione
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (error) {
+    done(error, null);
   }
 });
+
+// Inizializza Passport e imposta le sessioni
+router.use(passport.initialize());
+router.use(passport.session());
+
+// Rotte per l'autenticazione con Google
+router.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+router.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/' }),
+  (req, res) => {
+    res.redirect('/api/user/dashboard/verify');
+  }
+);
+
+// Verify the auth
+router.get('/dashboard/verify', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.json({ message: 'Accesso consentito', user: req.user });
+  } else {
+    res.status(401).json({ error: 'Accesso non autorizzato' });
+  }
+});
+
 
 module.exports = router;
