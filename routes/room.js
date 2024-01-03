@@ -48,7 +48,7 @@ router.post('/', async (req, res) => {
       host_user,
       meet_link,
       participants: [host_user],
-      admins: host_user,
+      admins: [host_user],
     });
 
     await newRoom.save();
