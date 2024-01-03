@@ -7,6 +7,8 @@ const messageSchema = new mongoose.Schema({
   room: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true },
   message_to_reply: {type: mongoose.Schema.Types.ObjectId, ref: 'Message'},
   is_deleted: {type: Boolean, default: false}, //auto-generated
+}, {
+  versionKey: false // added to delete __v field in the database
 });
 
 const Message = mongoose.model('Message', messageSchema);

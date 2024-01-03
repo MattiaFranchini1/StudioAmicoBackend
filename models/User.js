@@ -11,6 +11,8 @@ const userSchema = new mongoose.Schema({
   learning_review: {type: Number, default: 0.0}, // -- Number is correct -- Default value : 0 --
   counter_hour_teaching:{type: Number, default: 0}, //? -- Default value : 0 -- minutes counter --
   counter_hour_learning:{type: Number, default: 0}, //? -- Default value : 0 -- minutes counter --
+}, {
+  versionKey: false // added to delete __v field in the database
 });
 
 const User = mongoose.model('User', userSchema);

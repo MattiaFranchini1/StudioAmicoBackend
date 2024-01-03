@@ -11,6 +11,8 @@ const roomSchema = new mongoose.Schema({
   files: [{ type: mongoose.Schema.Types.ObjectId, ref: 'File' }],
   meet_link: { type: String, required: true}, //auto-generated
   admins: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+}, {
+  versionKey: false // added to delete __v field in the database
 });
 
 const Room = mongoose.model('Room', roomSchema);

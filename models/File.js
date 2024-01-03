@@ -7,6 +7,8 @@ const fileSchema = new mongoose.Schema({
   file_url: { type: String, required: true }, //"auto-generated"
   timestamp: { type: Date, default: Date.now }, //auto-generated
   room: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true }, //"auto-generated"
+}, {
+  versionKey: false // added to delete __v field in the database
 });
 
 const File = mongoose.model('File', fileSchema);
