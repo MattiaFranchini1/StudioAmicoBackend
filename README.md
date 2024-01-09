@@ -1,2 +1,2 @@
 # StudioAmicoBackend
-Backendof Studio Amico project 
+Backend of Studio Amico project 
