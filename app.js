@@ -21,10 +21,9 @@ app.use(express.urlencoded({
 }));
 
 app.use(session({
-  secret: process.env.SESSION_SECRET, // Sostituisci con una stringa segreta robusta
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
-  // store: ... // Opzionale: specifica uno store per le sessioni (ad esempio, se usi MongoDB)
 }));
 
 // Inizializza Passport e imposta le sessioni
