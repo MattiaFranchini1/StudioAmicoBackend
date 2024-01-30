@@ -23,16 +23,6 @@ router.get('/logout', (req, res) => {
   res.redirect('/')
 })
 
-// Dashboard verification route
-router.get('/dashboard/verify', (req, res) => {
-  // Check if the user is authenticated
-  if (req.isAuthenticated()) {
-    res.json({ message: 'Access granted', user: req.user });
-  } else {
-    // If not authenticated, return unauthorized status
-    res.status(401).json({ error: 'Unauthorized access' });
-  }
-});
 
 // Middleware for checking user authentication
 router.use(isAuthenticated);
@@ -48,6 +38,12 @@ router.get('/', async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
+});
+
+router.get('/profile', (req, res) => {
+    res.json({
+      user: req.user
+    });
 });
 
 router.get('/:userId', async (req, res) => {
@@ -67,7 +63,7 @@ router.get('/:userId', async (req, res) => {
   }
 });
 
-router.put('/:userId', async (req, res) => {
+router.put('/:userId', async (req, res) => { //change account options -- not implemented now
   const userId = req.params.userId;
   const newData = req.body;
   try {
