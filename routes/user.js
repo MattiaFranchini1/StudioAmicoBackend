@@ -3,73 +3,25 @@ const router = express.Router();
 const User = require('../models/User.js');
 require('dotenv').config();
 const isAuthenticated = require('../middleware/AuthMiddleware.js');
+const passport = require('passport')
 
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
+router.get('/auth/google', passport.authenticate('google', { scope: ['profile','email'] }))
 
-// Passport configuration for Google OAuth 2.0
-passport.use(new GoogleStrategy({
-  clientID: process.env.CLIENT_ID,
-  clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: process.env.CALLBACK_AUTH_URI,
-},
-async (accessToken, refreshToken, profile, done) => {
-  try {
-    // Check if the user exists in the database
-    const user = await User.findOne({ email: profile.emails[0].value });
 
-    if (user) {
-      // If user exists, authenticate and proceed
-      return done(null, user);
-    } else {
-      // If user doesn't exist, create a new user and save it to the database
-      const newUser = new User({
-        googleId: profile.id,
-        username: profile.displayName,
-        email: profile.emails[0].value,
-        profile_image_url: profile.photos[0].value
-      });
-
-      await newUser.save();
-      return done(null, newUser);
-    }
-  } catch (error) {
-    // Handle errors during authentication
-    return done(error, null);
-  }
-}));
-
-// Serialize user information for session storage
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-// Deserialize user information from session storage
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id);
-    done(null, user);
-  } catch (error) {
-    done(error, null);
-  }
-});
-
-// Initialize and use Passport middleware
-router.use(passport.initialize());
-router.use(passport.session());
-
-// Google OAuth 2.0 authentication routes
-router.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-);
-
-router.get('/auth/google/callback',
+router.get(
+  '/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
-    // Redirect to the dashboard verification endpoint upon successful authentication
-    res.redirect('/api/users/dashboard/verify');
+    console.log("Redirecting...")
+    //console.log(req.user)
+    res.redirect('http://localhost:5000') //bisogna modifica (bisogna rimandare da dove è arrivata la richiesta)
   }
-);
+)
+
+router.get('/logout', (req, res) => {
+  req.logout()
+  res.redirect('/')
+})
 
 // Dashboard verification route
 router.get('/dashboard/verify', (req, res) => {
