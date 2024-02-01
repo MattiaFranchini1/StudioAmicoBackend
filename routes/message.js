@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const isAuthenticated = require('../middleware/AuthMiddleware.js');
 const User = require('../models/User.js');
 const Message = require('../models/Message.js');
+const Room = require('../models/Room.js');
 
 const router = express.Router();
 
@@ -25,19 +26,27 @@ router.get('/:roomId', async (req, res) => {
 
 // Create a new message
 router.post('/', async (req, res) => {
+  //console.log("Stanno provando a mandare un messaggio...")
   try {
-    const { content, room } = req.body;
-    const userId = req.user._id;
+    //console.log(req.body)
+    const { room, sender, text } = req.body;
+    content = text
+    //console.log(room)
+    const userId = sender
+    //console.log(sender)
 
     // Check if the user is authorized to send messages to the specified room
-    const userInRoom = await User.findOne({ _id: userId, rooms: room });
+    const userInRoom = await Room.findOne({_id: room, participants: sender});
     if (!userInRoom) {
+      //console.log(userInRoom)
       return res.status(403).json({ error: 'You are not authorized to send messages to this room.' });
     }
 
     // Create a new message and save it to the database
     const newMessage = new Message({ content, sender_user: userId, room });
     await newMessage.save();
+
+    await Room.findByIdAndUpdate(room, { $addToSet: { messages: newMessage._id } });
 
     res.json(newMessage);
   } catch (error) {
