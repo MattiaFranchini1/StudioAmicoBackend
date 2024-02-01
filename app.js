@@ -4,6 +4,9 @@ const mongoose = require('mongoose');
 const http = require('http');
 const initializeSocket = require('./sockets/socketManager');
 const userRoutes = require('./routes/user');
+const roomRoutes = require('./routes/room');
+const messageRoutes = require('./routes/message');
+const fileRoutes = require('./routes/file');
 const passport = require('passport');
 require('dotenv').config();
 const session = require('express-session');
@@ -30,6 +33,7 @@ app.use(cors(corsOptions));
 // Express middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -45,6 +49,10 @@ app.use(passport.session())
 
 // API routes
 app.use('/api/users', userRoutes);
+app.use('/api/rooms', roomRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api/files', fileRoutes);
+
 server.listen(port, () => {
   console.log(`Server running on port ${port}`)
 })
