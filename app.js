@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const http = require('http');
+const initializeSocket = require('./sockets/socketManager');
 const userRoutes = require('./routes/user');
 const passport = require('passport');
 require('dotenv').config();
@@ -11,6 +12,7 @@ require('./auth/passport')(passport)
 
 const app = express();
 const server = http.createServer(app);
+const io = initializeSocket(server);
 
 const port = 3000;
 
