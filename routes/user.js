@@ -14,7 +14,7 @@ router.get(
   (req, res) => {
     console.log("Redirecting...")
     //console.log(req.user)
-    res.redirect('http://localhost:5000') //bisogna modifica (bisogna rimandare da dove è arrivata la richiesta)
+    res.redirect(process.env.ORIGIN_FRONTEND)
   }
 )
 

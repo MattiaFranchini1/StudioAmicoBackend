@@ -24,7 +24,7 @@ mongoose.connect(process.env.ATLAS_URI, /*{ useNewUrlParser: true, useUnifiedTop
 
 // CORS configuration
 const corsOptions = {
-  origin: 'http://localhost:5000',
+  origin: process.env.ORIGIN_FRONTEND,
   credentials: true,
 };
 app.use(cors(corsOptions));
