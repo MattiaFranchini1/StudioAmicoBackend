@@ -2,6 +2,7 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const mongoose = require('mongoose')
 const User = require('../models/User')
+const axios = require('axios');
 
 module.exports = function (passport) {
   passport.use(
@@ -13,11 +14,29 @@ module.exports = function (passport) {
       },
       async (accessToken, refreshToken, profile, done) => {
         //get the user data from google 
+
+        const mail = profile.emails[0].value;
+        let classe='';
+
+        try {
+          const response = await axios.get(`${process.env.CLASS_API_ENDPOINT}${mail}`, {
+            headers: {
+              Authorization: `Bearer ${process.env.CLASS_TOKEN}`,
+            },
+          });
+
+          console.log('Risposta dalla richiesta:', response.data);
+          classe = response.data.Classe;
+        } catch (error) {
+          console.error('Errore durante la richiesta:', error);
+        }
+
         const newUser = {
-            //_id: profile.id,
-            username: profile.displayName,
-            email: profile.emails[0].value,
-            profile_image_url: profile.photos[0].value
+          //_id: profile.id,
+          username: profile.displayName,
+          email: profile.emails[0].value,
+          profile_image_url: profile.photos[0].value,
+          class: classe,
         }
 
         try {
@@ -47,11 +66,11 @@ module.exports = function (passport) {
 
   // used to deserialize the user
   passport.deserializeUser(async (id, done) => {
-    console.log('Deserializzazione con ID:', id);
-  
+    //console.log('Deserializzazione con ID:', id);
+
     try {
       const user = await User.findOne({ _id: id }).exec();
-  
+
       if (user) {
         done(null, user);
       } else {
