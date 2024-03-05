@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const http = require('http');
 const initializeSocket = require('./sockets/socketManager');
 const userRoutes = require('./routes/user');
 const roomRoutes = require('./routes/room');
@@ -12,9 +11,16 @@ require('dotenv').config();
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 require('./auth/passport')(passport)
+const https = require('https');
+
+
+const options = {
+  key: process.env.PRIV_KEY,
+  cert: process.env.CERT
+};
 
 const app = express();
-const server = http.createServer(app);
+const server = https.createServer(options, app);
 const io = initializeSocket(server);
 
 const port = 3000;
