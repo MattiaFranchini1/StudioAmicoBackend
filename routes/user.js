@@ -19,9 +19,17 @@ router.get(
 )
 
 router.get('/logout', (req, res) => {
-  req.logout()
-  res.redirect('/')
-})
+  req.logout(() => {
+    res.json({ success: true, message: 'Logout successful' });
+  });
+});
+
+
+router.get('/profile', (req, res) => {
+  res.json({
+    user: req.user
+  });
+});
 
 
 // Middleware for checking user authentication
@@ -38,12 +46,6 @@ router.get('/', async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-});
-
-router.get('/profile', (req, res) => {
-    res.json({
-      user: req.user
-    });
 });
 
 router.get('/:userId', async (req, res) => {
