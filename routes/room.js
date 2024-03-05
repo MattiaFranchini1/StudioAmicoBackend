@@ -39,7 +39,7 @@ router.post('/', async (req, res) => {
     const { room_name, subject, class_level, class_type, meet_link } = req.body;
     const host_user = req.user._id;
 
-    // Create a new room and save it to the database
+    // Create a new room
     const newRoom = new Room({
       room_name,
       subject,
@@ -51,16 +51,31 @@ router.post('/', async (req, res) => {
       admins: [host_user],
     });
 
-    await newRoom.save();
+    console.log(newRoom);
+
+    // Save the new room to the database
+    try {
+      await newRoom.save();
+    } catch (saveError) {
+      console.error('Error saving room to the database:', saveError);
+      throw new Error('Error saving room to the database.');
+    }
 
     // Update the host user's rooms array to include the created room
-    await User.findByIdAndUpdate(host_user, { $addToSet: { rooms: newRoom._id } });
+    try {
+      await User.findByIdAndUpdate(host_user, { $addToSet: { rooms: newRoom._id } });
+    } catch (updateError) {
+      console.error('Error updating user with the new room:', updateError);
+      throw new Error('Error updating user with the new room.');
+    }
 
     res.json(newRoom);
   } catch (error) {
+    console.error('Error creating room:', error);
     res.status(500).json({ error: 'Error creating the room.' });
   }
 });
+
 
 // Get details of a specific room
 router.get('/:roomId', async (req, res) => {
