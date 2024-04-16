@@ -28,7 +28,7 @@ function initializeSocket(server) {
             // Retrieve and send historical messages for the joined room
             try {
                 // Retrieve and send historical messages for the joined room
-                const response = await axios.get(`http://localhost:3000/api/messages/${roomName}`, { params: { internalRequest: true }});
+                const response = await axios.get(`${process.env.MESSAGE_ENDPOINT}${roomName}`, { params: { internalRequest: true }});
                 let messages = response.data
                 console.log(messages)
                 socket.emit('loadMessages', messages);
@@ -51,7 +51,7 @@ function initializeSocket(server) {
             });
 
             try {
-                const response = await axios.post('http://localhost:3000/api/messages/', { text, room, sender, internalRequest: true });
+                const response = await axios.post(`${process.env.MESSAGE_ENDPOINT}`, { text, room, sender, internalRequest: true });
                 console.log('Messaggio inviato con successo:', response.data);
               } catch (error) {
                 console.error('Errore nell\'invio del messaggio:', error.message);
