@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
   learning_review_total_number: {type: Number, default: 0},
   counter_hour_teaching: { type: Number, default: 0 },
   counter_hour_learning: { type: Number, default: 0 },
+  events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }],
 }, {
   versionKey: false
 });
