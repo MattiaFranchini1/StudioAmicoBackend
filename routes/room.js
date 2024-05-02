@@ -33,11 +33,28 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Create a new room
 router.post('/', async (req, res) => {
   try {
     const { room_name, subject, class_level, class_type, meet_link } = req.body;
     const host_user = req.user._id;
+
+    // Check if class_level is a number between 1 and 5
+    if (typeof class_level !== 'number' || class_level < 1 || class_level > 5) {
+      return res.status(400).json({ error: 'class_level must be a number between 1 and 5' });
+    }
+
+    // Check if class_type is one of the specified values
+    const allowedClassTypes = ['Informatica', 'Meccanica', 'Elettronica/Elettrotecnica', 'Tessile', 'Biennio'];
+    if (!allowedClassTypes.includes(class_type)) {
+      return res.status(400).json({ error: 'class_type must be one of: Informatica, Meccanica, Elettronica/Elettrotecnica, Tessile, Biennio' });
+    }
+
+    // Check if all subjects are from the specified list
+    const allowedSubjects = ['Matematica', 'Italiano', 'Inglese', 'Fisica', 'Chimica', 'TTRG', 'Informatica', 'Storia', 'Diritto', 'Scienze', 'STA', 'Biologia', 'Geografia', 'Economia', 'Ideazione e Progettazione', 'Tecnologie', 'Elettronica', 'Sistemi', 'Meccanica', 'Disegno', 'Sistemi e reti', 'GEP', 'TEP', 'Telecomunicazioni'];
+    const invalidSubjects = subject.filter(sub => !allowedSubjects.includes(sub));
+    if (invalidSubjects.length > 0) {
+      return res.status(400).json({ error: `Invalid subjects: ${invalidSubjects.join(', ')}` });
+    }
 
     // Create a new room
     const newRoom = new Room({
@@ -75,6 +92,7 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'Error creating the room.' });
   }
 });
+
 
 
 // Get details of a specific room
